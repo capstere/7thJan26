@@ -4,7 +4,7 @@ function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
 // Initiera countdown
 function updateCountdown() {
   const el = document.getElementById("countdown"),
-        target = new Date("2025-05-01T00:00:00");
+        target = new Date("2026-01-07T06:00:00");
   (function tick(){
     const diff = target - new Date();
     if (diff <= 0) { el.textContent = "The day has arrived!"; return; }

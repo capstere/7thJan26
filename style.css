@@ -1,0 +1,464 @@
+/* --- Reset --- */
+/* Nollställ marginaler och padding för alla element WOOP */
+* { margin: 0; padding: 0; }
+
+/* --- Basinställningar + perspektiv --- */
+body, html {
+  width: 100%;            /* Full bredd */
+  height: 100%;           /* Full höjd */
+  font-family: "Droid Sans", arial, sans-serif; /* Typsnitt */
+  font-weight: 700;       /* Fet stil */
+  color: #ff6;            /* Standard textfärg */
+  overflow: hidden;       /* Ingen scrollbalk */
+  position: relative;     /* För absoluta positioneringar */
+  background: none;       /* Ingen statisk bakgrund - allt i pseudo-element */
+  perspective: 800px;     /* Djup för 3D-animationer */
+}
+
+/* --- Animerad stjärnhimmel --- */
+body::before {
+  content: "";           /* Pseudo-element utan text */
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 200vh;          /* Dubbla viewport-höjden för scroll */
+  background: url('assets/bg-stars.jpeg') no-repeat center top;
+  background-size: cover; /* Täcker hela elementet */
+  transform: translateY(0);/* Startposition */
+  z-index: -1;            /* Bakom allt annat */
+}
+body.falling::before {
+  /* Sätt på denna klass för att animera stjärnor */
+  animation: starsFall 10s linear forwards;
+  /* Ändra 10s för att snabba upp eller sakta ner animationstiden */
+}
+@keyframes starsFall {
+  to { transform: translateY(-40vh); }
+  /* -50vh: flytta halva höjden. Ändra värdet för mindre/mindre rörelse */
+}
+
+/* --- Dölj-element innan de aktiveras --- */
+.hidden { display: none; }
+
+/* --- Countdown --- */
+#countdown {
+  position: absolute;
+  top: 10px;               /* Avstånd från toppen */
+  left: 50%;               /* Centrerat horisontellt */
+  transform: translateX(-50%);
+  font-size: 2rem;         /* Ändra för större/mindre text */
+  color: #ffe81f;          /* Ändra färg */
+  z-index: 1000;
+}
+
+/* --- Startknapp --- */
+#start-button {
+  position: absolute;
+  top: 50%; left: 50%;     /* Mitt på skärmen */
+  transform: translate(-50%, -50%);
+  font-size: 1.8em;        /* Textstorlek */
+  padding: 20px 40px;      /* Inre marginaler */
+  background-color: #ffe81f;/* Bakgrundsfärg */
+  color: black;            /* Textfärg */
+  border: none;
+  border-radius: 10px;     /* Rundade hörn */
+  cursor: pointer;
+  z-index: 1100;
+
+  /* Lägg till transition och initial glow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, text-shadow 0.3s ease;
+  box-shadow: 0 0 8px #ffe81f, 0 0 16px #ff6;
+  text-shadow: 0 0 4px #fff, 0 0 8px #ff6;
+
+  /* Pulsande glow-animation */
+  animation: button-glow 2.5s infinite ease-in-out;
+}
+/* Hover: skala upp lite och maxa glöden */
+#start-button:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 0 20px #ffe81f, 0 0 40px #ff6;
+}
+/* Keyframes för pulsande glow */
+@keyframes button-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px #ffe81f, 0 0 16px #ff6;
+    text-shadow: 0 0 4px #fff, 0 0 8px #ff6;
+  }
+  50% {
+    box-shadow: 0 0 12px #ffe81f, 0 0 24px #ff6;
+    text-shadow: 0 0 6px #fff, 0 0 12px #ff6;
+  }
+}
+
+/* --- Intro-text ("long time ago...") --- */
+#start-text {
+  position: relative;
+  width: 16em;             /* Bredd i em */
+  margin: 20% auto;        /* Vertikal placering och centrerad */
+  font-size: 200%;         /* Ändra för textstorlek */
+  font-weight: 400;
+  color: #4ee;             /* Textfärg */
+  opacity: 0;              /* Startar osynlig */
+  z-index: 1;
+  animation: intro 3s ease-out forwards;
+  /* 3s: längd på intro-animation */
+}
+@keyframes intro {
+  0%, 90% { opacity: 1; }
+  100%    { opacity: 0; }
+  /* 90%: hur länge texten är synlig innan fade-out */
+}
+
+/* --- SPAR WARS-logga med kraftigare borders --- */
+h1 {
+  position: absolute;
+  top: 50%; left: 50%;     /* Mitt i viewport */
+  transform: translate(-50%, -50%) translateZ(0) scale(1);
+  transform-origin: center center;
+  font-size: 50em;         /* Ändra storlek på loggan */
+  line-height: 0.8em;
+  letter-spacing: -0.05em;
+  color: #000;             /* Textfärg */
+  text-shadow:
+    -2px -2px 0 #ff6,
+     2px -2px 0 #ff6,
+    -2px  2px 0 #ff6,
+     2px  2px 0 #ff6;
+  -webkit-text-stroke: 15px #ff6;  /* Ännu fetare gul kant */
+  opacity: 0;
+  z-index: 1;
+  animation: logo 6s ease-out 0s forwards;
+  /* 0.5s: fördröjning innan animation startar */
+}
+@keyframes logo {
+  0% {
+    transform: translate(-50%, -50%) translateZ(0) scale(1);
+    opacity: 1;
+  }
+  50% { opacity: 1; }
+  100% {
+    transform: translate(-50%, -50%) translateZ(-800px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* --- Crawl-text (rullande) --- */
+#titles {
+  position: absolute;
+  width: 18em; height: 50em; /* Justera vyboxens storlek */
+  bottom: 0; left: 50%;
+  margin-left: -9em;        /* Halv bredd för centering */
+  font-size: 350%;          /* Textstorlek i crawlen */
+  text-align: justify;
+  overflow: hidden;         /* Skär av text utanför */
+  transform-origin: 50% 100%;
+  transform: perspective(300px) rotateX(25deg);
+  /* 300px: djup för 3D-perspektiv, 25deg: lutning */
+}
+#titles:after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 60%;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,1) 0%, transparent 100%);
+  /* Mörk toning upptill */
+  pointer-events: none;
+}
+#titlecontent {
+  position: absolute;
+  top: 100%;               /* Start precis utanför */
+  animation: scroll 25s linear forwards;
+  /* 25s: ändra för snabbare/långsammare scroll */
+}
+@keyframes scroll {
+  0%   { top: 100%; }
+  100% { top: -170%; }
+  /* -170%: flytta texten utanför toppen */
+}
+#titles p { margin: 0.8em 0; }
+#titles p.center { text-align: center; }
+
+/* --- Planetbild med uppochnedflyttning --- */
+#planet-effect {
+  position: fixed;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%;             /* Justera bredd */
+  opacity: 0;
+  z-index: 900;
+  animation: none;
+}
+#planet-effect.active-planet {
+  animation: planetRise 10s ease-out forwards;
+  /* 10s: längd på planetanimationen */
+}
+@keyframes planetRise {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0vh);
+    opacity: 1;
+    /* 0vh: sluthöjd, ändra till negativt för högre uppflytt */
+  }
+}
+
+/* --- Finala element + knappar --- */
+
+/* Container för slutlig UI (titel + knappar) */
+#final-elements {
+  position: absolute;      /* Placera relativt till närmaste positionerade förälder (här body/html) */
+  top: 50%;                /* Vertikalt 50% nerifrån */
+  left: 50%;               /* Horisontellt 50% från vänster */
+  transform: translate(-50%, -50%); /* Flytta tillbaka hälften av egen bredd/höjd för perfekt centring */
+  text-align: center;      /* Centrera text och inline-element inuti containern */
+  z-index: 1050;           /* Högre än övriga element så att denna ligger längst fram */
+  opacity: 0;              /* Startar osynlig */
+  transition: opacity 5s ease-in; /* Animera opaciteten under 5 sekunder med “ease-in” kurva */
+  /*   ↑ 5s: hur lång tid fade-in tar
+       ↑ ease-in: börjar långsamt och slutar snabbt */
+}
+/* När klassen .hidden tas bort → gör elementen synliga */
+#final-elements:not(.hidden) {
+  opacity: 1;              /* Fullt synlig */
+}
+
+/* Huvudrubrik i final-sektionen */
+#main-title {
+  font-size: 4em;          /* Stor text: 4 gånger standard font-size */
+  color: #ffe81f;          /* Gul färgkod (hex) */
+  text-shadow: 2px 2px 8px rgba(255,232,31,0.8);
+                           /* Skugga: horisontellt 2px, vertikalt 2px, suddig 8px, färg med 80% opacitet */
+  margin-bottom: 1em;      /* Utrymme under rubriken, 1em motsvarar font-size */
+}
+
+/* Wrapper för knapparna */
+#buttons {
+  display: flex;           /* Flexbox—rad-baserad layout */
+  justify-content: center; /* Centrera flex-items horisontellt */
+  align-items: center;     /* Centrera flex-items vertikalt */
+  gap: 32px;               /* 32px avstånd mellan varje knapp */
+  flex-wrap: wrap;         /* Radbryt om de inte får plats på en rad */
+}
+
+/* Själva knapparna */
+.hamburger-btn {
+  position: relative;      /* Gör att absoluta barn-positioner relaterar hit */
+  padding: 24px 48px;      /* Inre marginal: 24px upp/ner, 48px vänster/höger */
+  font-size: 1.5em;        /* Textstorlek: 1.5 gånger standard */
+  min-width: max-content;         /* se till att texten alltid får plats */
+  background: linear-gradient(145deg, #ffe81f, #ffd700);
+                           /* Bakgrundsgradient: 145° vinkel, från ljusgul till mörkgul */
+  color: black;            /* Textfärg */
+  border: 2px solid black; /* 2px svart kant runt knappen */
+  border-radius: 8px;      /* Rundade hörn med radie 8px */
+  text-transform: uppercase; /* Omvandla all text till versaler */
+  cursor: pointer;         /* Ändra muspekare till hand när man hovrar */
+  overflow: visible;        /* Dölj allt som hamnar utanför knappens box */
+  transition:     transform 0.2s ease, box-shadow 0.3s ease, text-shadow 0.3s ease;
+                           /* TA BORT BOX och TEXT ease EVENTUELLT. Animera transform (t.ex. scale) under 0.2s med ease-kurva */
+  /* Lätt glow som grundläge */
+  box-shadow:
+    0 0 6px rgba(255,232,31,0.6),
+    0 0 12px rgba(255,206,0,0.4);
+  
+}
+
+/* --- Finala element + knappar --- */
+#final-elements {
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; z-index: 1050;
+  opacity: 0; transition: opacity 5s ease-in;
+  /* 5s: fade-in för finala element */
+}
+#final-elements:not(.hidden) { opacity: 1; }
+#main-title {
+  font-size: 4em; /* Tit
+levästa */ color: #ffe81f; /* Färg */
+  text-shadow: 2px 2px 8px rgba(255,232,31,0.8);
+  margin-bottom: 1em;
+}
+#buttons {
+  display: flex; justify-content: center;
+  align-items: center; gap: 32px; /* Avstånd mellan knappar */
+  flex-wrap: wrap;
+}
+.hamburger-btn {
+  position: relative; padding: 24px 48px; /* Knappstorlek */
+  font-size: 1.5em; /* Textstorlek i knapp */
+  background: linear-gradient(145deg, #ffe81f, #ffd700);
+  color: black; border: 2px solid black;
+  border-radius: 8px; text-transform: uppercase;
+  cursor: pointer; overflow: visible;
+  min-width: max-content;
+  transition: transform 0.2s ease;
+}
+.hamburger-btn span {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.hamburger-btn span:nth-child(3) {
+  transform: translate(-50%, -50%) scaleY(0);
+  opacity: 0; font-size: 1em; font-weight: 700;
+  color: #ffe81f;
+  text-shadow: 2px 2px 8px rgba(255,232,31,0.8);
+  border: 2px #ffe81f; /* Lägg till en border */
+  padding: 2px; /* Lägg till lite padding för att göra border mer synlig */
+
+}
+.hamburger-btn:hover span:nth-child(1) {
+  transform: translate(-50%, calc(-50% - 0.8em));
+}
+.hamburger-btn:hover span:nth-child(2) {
+  transform: translate(-50%, calc(-50% + 0.8em));
+}
+.hamburger-btn:hover span:nth-child(3) {
+  transform: translate(-50%, -50%) scaleY(1);
+  opacity: 1; color: black;
+  /* Inner-text färg på hover */
+}
+
+
+.hidden { display: none; }
+
+/* --- Interaktiv ljussabel --- */
+/* 1) Startar dolt */
+#interactive-saber {
+  display: none;
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  cursor: pointer;
+}
+
+/* 2) När hidden-klassen tas bort → flex-container */
+#interactive-saber:not(.hidden) {
+  display: flex;
+}
+
+/* Gör handtaget till referenspunkt för bladet */
+.saber-hilt {
+  position: relative;
+  width: 20px;
+  height: 40px;
+  background: #444;
+  border: 2px solid #222;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+/* Bladet: absolut inuti handtaget, centrerat horisontellt */
+.saber-blade {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 0;
+  background: #0ff;
+  box-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
+  transition: height 0.5s ease, box-shadow 0.5s ease;
+}
+
+#interactive-saber.on .saber-blade {
+  height: 300px;
+}
+
+#interactive-saber.red .saber-blade {
+  background: #f00;
+  box-shadow: 0 0 8px #f00, 0 0 16px #f00;
+}
+
+#interactive-saber.green .saber-blade {
+  background: #0f0;
+  box-shadow: 0 0 8px #0f0, 0 0 16px #0f0;
+}
+
+/* ===== Piffad nedräknare ===== */
+#countdown {
+  /* Monospace-font för digital känsla */
+  font-family: "Orbitron", monospace;
+  /* Mörk genomskinlig bakgrund för kontrast */
+  background: rgba(0,0,0,0.6);
+  /* Vitt glow runt texten */
+  text-shadow: 0 0 6px #ffe81f, 0 0 12px #ffec66;
+  /* Rundade hörn och padding */
+  padding: 10px 20px;
+  border-radius: 12px;
+  /* Lätt glow på hela boxen */
+  box-shadow: 0 0 10px rgba(255,232,31,0.7), 0 0 20px rgba(255,232,31,0.5);
+  /* Gör texten större och tydligare */
+  font-size: 2.2rem;
+  /* Animation som pulserar bakgrundens opacitet */
+  animation: countdown-pulse 1.5s ease-in-out infinite alternate;
+}
+
+/* Pulsande bakgrund till nedräknaren */
+@keyframes countdown-pulse {
+  from { background: rgba(0,0,0,0.5); }
+  to   { background: rgba(0,0,0,0.8); }
+}
+
+/* ===== Mobil (portrait) upp till 480px ===== */
+@media only screen and (max-width: 480px) {
+  /* Intro-text */
+  #start-text {
+    width: auto;
+    max-width: 12em;
+    font-size: 1.2rem;
+    margin: 40% auto;
+    text-align: center;
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  /* SPAR WARS-logga */
+  h1 {
+    font-size: 22em;
+    -webkit-text-stroke: 6px #ff6;
+  }
+
+  /* Crawl-text centrerad */
+  #titles {
+    width: 14em;
+    height: 35em;
+    font-size: 150%;
+    left: 50% !important;
+    margin-left: -7em !important;
+    transform: translateX(0) perspective(300px) rotateX(25deg) !important;
+  }
+
+
+  /* Huvudtitel i finalen */
+  #main-title {
+    font-size: 2em;
+  }
+
+  /* Startknapp – mindre */
+  #start-button {
+    font-size: 1em;
+    padding: 10px 20px;
+    max-width: 90%;
+  }
+
+    /* Knappar – stapla i kolumn för trängre skärm */
+  #buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .hamburger-btn {
+    padding: 12px 24px;
+    font-size: 1em;
+  }
+  /* Nedräknare */
+  #countdown {
+    font-size: 1.2rem;
+    padding: 4px 8px;
+  }
+}
